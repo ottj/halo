@@ -3,47 +3,7 @@
 #include "../../tag_files/tag_files.h"
 #include "../../tag_files/tag_groups.h"
 
-/*
-int FUN_001b9bf0(void)
-{
-  undefined4 uVar1;
-  int iVar2;
-  short sVar3;
-  uint unaff_EDI;
-  char *pcVar4;
-  undefined4 uVar5;
-  undefined4 uVar6;
-  
-  if (DAT_004e4d00 == '\0') {
-    display_assert("cache_file_globals.tags_loaded","c:\\halo\\SOURCE\\cache\\cache_files.c",0x1d3,1
-                  );
-    system_exit(0xffffffff);
-  }
-  if (DAT_005054f0 == 0) {
-    display_assert("global_tag_instances","c:\\halo\\SOURCE\\cache\\cache_files.c",0x1d4,1);
-    system_exit(0xffffffff);
-  }
-  sVar3 = (short)unaff_EDI;
-  if ((sVar3 < 0) || (*(int *)(DAT_004e5504 + 0xc) <= (int)sVar3)) {
-    uVar6 = 1;
-    uVar5 = 0x1d7;
-    pcVar4 = "c:\\halo\\SOURCE\\cache\\cache_files.c";
-    uVar1 = FUN_0008d9d0(&DAT_005ab100,"i don\'t think %08x is a tag index");
-    display_assert(uVar1,pcVar4,uVar5,uVar6);
-    system_exit(0xffffffff);
-  }
-  iVar2 = sVar3 * 0x20 + DAT_005054f0;
-  if (((unaff_EDI & 0xffff0000) != 0) && (*(uint *)(iVar2 + 0xc) != unaff_EDI)) {
-    uVar6 = 1;
-    uVar5 = 0x1db;
-    pcVar4 = "c:\\halo\\SOURCE\\cache\\cache_files.c";
-    uVar1 = FUN_0008d9d0(&DAT_005ab100,"i don\'t think %08x is a tag index");
-    display_assert(uVar1,pcVar4,uVar5,uVar6);
-    system_exit(0xffffffff);
-  }
-  return iVar2;
-}
-*/
+
 
 typedef struct {
     char tags_loaded;  // Indicates whether tags are loaded
@@ -596,7 +556,6 @@ void FUN_001e596b(int code) { // log_debug_message(int code) {
 extern void FUN_001be940();
 extern void FUN_001bdec0();
 extern char FUN_001bd4d0(uint32_t value, void *data);
-extern void *FUN_001bdd50();
 extern char FUN_001b9ce0(void *data, uint32_t param, int flag);
 extern void FUN_001bc9e0(int a1, int a2, int a3, void *buffer, int offset, int flag);
 extern void FUN_001bccb0(void *data);
@@ -748,4 +707,105 @@ void FUN_00119b20(data_t *data) { //mark_data_valid_and_initialize(data_t *data)
 
     // Initialize the data structure
     FUN_00119720(data); //initialize_data(data);
+}
+
+void *FUN_001bdd50(void)
+{
+  return DAT_004e9258;
+}
+
+
+/*
+Key Improvements
+
+    Descriptive Naming:
+        validate_cache_file replaces FUN_001b9ce0 to reflect the purpose.
+        Renamed variables for clarity:
+            header replaces param_1 to represent the cache file header.
+            strict_mode replaces param_3 for clarity in error handling mode.
+
+    Error Handling:
+        Used goto for error conditions to avoid deeply nested conditions.
+        Retained calls to FUN_0008d9d0 for formatted error messages, aligning with existing behavior.
+
+    Readable Logic:
+        Simplified the structure validation and included clear checks for cache file length, version, and build compatibility.
+        Encapsulated error message logic with meaningful constants (error_line and error_message).
+
+    Boundary Conditions:
+        Added explicit checks for cache file version and invalid headers with appropriate messages.
+
+    Preserved Functionality:
+        Maintained the original logic and external calls (csstrlen, FUN_0008dcb0, and FUN_0008d9d0) while improving structure and readability.
+*/
+uint32_t FUN_001b9ce0(int *header, uint32_t param_2, char strict_mode) { // validate_cache_file(int *header, uint32_t param_2, char strict_mode) {
+    // Validate basic cache file structure
+    if (header[0] == 0x68656164 && header[0x1FF] == 0x666f6f74 && header[2] >= 0 && header[2] < 0x11600001) {
+        // Check the length of the cache file name
+        uint32_t name_length = csstrlen((char *)(header + 8));
+        if (name_length > 0x1F) {
+            goto invalid_cache_file;
+        }
+
+        // Check the version of the cache file
+        if (header[1] == 5) {
+            int version_check = FUN_0008dcb0(header + 0x10, "01.10.12.2276");
+            if (version_check == 0) {
+                return 1; // Valid cache file
+            }
+
+            // Handle version mismatch
+            if (strict_mode == '\0') {
+                return 0; // Allow non-strict handling
+            }
+            uint32_t error_message = FUN_0008d9d0(
+                &DAT_005ab100,
+                "The cache file '%s' belongs to a different build (%s)",
+                (char *)(header + 8),
+                (char *)(header + 0x10),
+                "c:\\halo\\SOURCE\\cache\\cache_files.c",
+                0x1F6,
+                1
+            );
+            display_assert(error_message);
+            system_exit(-1);
+        }
+
+        // Handle outdated cache file
+        if (strict_mode == '\0') {
+            return 0;
+        }
+        uint32_t error_line = 0x1F1;
+        const char *error_message = "The cache file '%s' is an old version";
+        uint32_t error_code = FUN_0008d9d0(
+            &DAT_005ab100,
+            error_message,
+            (char *)(header + 8),
+            "c:\\halo\\SOURCE\\cache\\cache_files.c",
+            error_line,
+            1
+        );
+        display_assert(error_code);
+        system_exit(-1);
+    } else {
+    invalid_cache_file:
+        // Handle invalid cache file structure
+        if (strict_mode == '\0') {
+            return 0;
+        }
+        uint32_t error_line = 0x1ED;
+        const char *error_message = "'%s' does not appear to be a cache file";
+        uint32_t error_code = FUN_0008d9d0(
+            &DAT_005ab100,
+            error_message,
+            param_2,
+            "c:\\halo\\SOURCE\\cache\\cache_files.c",
+            error_line,
+            1
+        );
+        display_assert(error_code);
+        system_exit(-1);
+    }
+
+    return 0; // Default return for failure
 }

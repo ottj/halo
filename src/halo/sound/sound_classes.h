@@ -1,0 +1,1 @@
+short * FUN_001c88c0(short class_index);

@@ -69,11 +69,11 @@ else()
 		message(FATAL_ERROR "You are attempting to compile with ${CMAKE_CXX_COMPILER_ID}. Please use LLVM toolchain (clang, lld). Specify -DCMAKE_TOOLCHAIN_FILE=toolchains/llvm.cmake during configuration.")
 	endif()
 	set(CMAKE_C_FLAGS "-Wall -Werror -target i386-pc-win32 -march=pentium3 -nostdlib -ffreestanding -fno-builtin -fno-exceptions -I${CMAKE_SOURCE_DIR}/src -include ${CMAKE_SOURCE_DIR}/src/common.h")
-	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=lld-link -Xlinker -entry:_start")
+	set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=lld-link -Xlinker -entry:_start -Xlinker -map -Xlinker -debug")
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -gdwarf-4")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -debug")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -debug -Xlinker -map")
 	endif()
 endif()
 

@@ -1,3 +1,5 @@
+#include "../../common.h"
+
 short game_connection(void)
 {
   return word_46DA0C;

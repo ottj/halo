@@ -18,6 +18,11 @@
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed int int32_t;
+
+typedef unsigned char byte;
+typedef unsigned int uint;
+
+
 #ifdef MSVC
 typedef __int64 int64_t;
 #else
@@ -54,6 +59,40 @@ typedef union {
     int16_t salt;
   };
 } datum_index_t;
+
+//from sound manager related stuff
+typedef unsigned long long uint64_t;
+uint64_t undefined8;
+
+typedef struct {
+    float value;           // Primary value
+    float current_value;   // Current value
+    short instance_count;  // Number of instances
+} sound_class_t;
+
+
+// Define a struct for the section
+typedef struct {
+    int32_t index;             // Offset 0x4: Section index, -1 if uninitialized
+    uint8_t active;            // Offset 0x8: Active flag (1 = active, 0 = inactive)
+    uint16_t stack_depth;     // Offset 0xA: stack depth, initialized to 0xFFFF
+    uint32_t start_time_low;         // Offset 0x18: Initialized to 0
+    uint32_t start_time_high;         // Offset 0x20: Initialized to 0
+    uint32_t field_24;         // Offset 0x24: Initialized to 0
+    char memory_block1[480];   // Offset 0x28: 480 bytes cleared
+    char memory_block2[960];   // Offset 0x208: 960 bytes cleared
+    uint32_t field_5c8;        // Offset 0x5C8: Initialized to 0
+    uint32_t profiling_counter;        // Offset 0x5CC: Initialized to 0
+    uint32_t field_5d0;        // Offset 0x5D0: Initialized to 0
+    uint32_t field_5d4;        // Offset 0x5D4: Initialized to 0
+    uint32_t field_5d8;        // Offset 0x5D8: Initialized to 0
+    uint32_t field_5e0;        // Offset 0x5E0: Initialized to 0
+    uint32_t field_5e4;        // Offset 0x5E4: Initialized to 0
+    uint32_t field_5e8;        // Offset 0x5E8: Initialized to 0
+    uint32_t field_5f0;        // Offset 0x5F0: Initialized to 0
+    uint32_t field_5f4;        // Offset 0x5F4: Initialized to 0
+} section_t;
+
 
 static const datum_index_t INVALID_DATUM_HANDLE = { -1 };
 
@@ -107,13 +146,13 @@ typedef struct {
   char unk_3;                                 ///< offset=0x03    padding?
   uint16_t unk_4;                             ///< offset=0x04    see .text:00144B50 _objects_garbage_collection & .text:001444F0 _object_update
   uint16_t unk_6;                             ///< offset=0x06    padding?
-  datum_handle_t unk_8;                       ///< offset=0x08    see .text:0013D939 mov     eax, [ecx+8]   datum handle for object_header_data
+  datum_index_t unk_8;                       ///< offset=0x08    see .text:0013D939 mov     eax, [ecx+8]   datum handle for object_header_data
   char combined_pvs[64];                      ///< offset=0x0C    see .text:0013F9A1 add     edx, 0Ch
   char combined_pvs_local[64];                ///< offset=0x4C    see .text:0013F9B2 add     eax, 4Ch
   uint32_t last_garbage_collection_tick;      ///< offset=0x8C    see .text:00144EF6 mov     edx, [ecx+8Ch]
   uint16_t pvs_activator_type;                ///< offset=0x90    see .text:0013DBE0 _object_pvs_set_object
   uint16_t unk_146;                           ///< offset=0x92    padding?
-  datum_handle_t pvs_activator_object_index;  ///< offset=0x94    see .text:0013DBE0 _object_pvs_set_object & .text:0013DCE4 mov     ecx, [ecx+94h]
+  datum_index_t pvs_activator_object_index;  ///< offset=0x94    see .text:0013DBE0 _object_pvs_set_object & .text:0013DCE4 mov     ecx, [ecx+94h]
 } object_globals_t;
 
 #define NUMBER_OF_OUTGOING_OBJECT_FUNCTIONS 4
@@ -133,7 +172,7 @@ typedef struct {
 
   // .text:00031FEE                 mov     edx, [eax+4Ch]  
   // .text:00034D1F                 movsx   eax, word ptr [eax+4Ch] object.location.cluster_index
-  datum_handle_t unk_76;    ///< offset=0x4C
+  datum_index_t unk_76;    ///< offset=0x4C
 
   float unk_80;             ///< offset=0x50  .text:0009D161                 fsub    dword ptr [ebx+50h]
   float unk_84;             ///< offset=0x54  .text:0009D167                 fsub    dword ptr [ebx+54h]
@@ -174,9 +213,9 @@ typedef struct {
   uint32_t unk_184;         ///< offset=0xB8
   uint32_t unk_188;         ///< offset=0xBC  .text:00143F81                 mov     [edi+0BCh], eax
   uint32_t unk_192;         ///< offset=0xC0
-  datum_handle_t next_object_index;   ///< offset=0xC4  .text:0014537B                 mov     ecx, [eax+0C4h]
-  datum_handle_t unk_200;   ///< offset=0xC8  .text:000320C3                 mov     eax, [edi+0C8h]
-  datum_handle_t parent_object_index;   ///< offset=0xCC  .text:00145348                 mov     ecx, [eax+0CCh]
+  datum_index_t next_object_index;   ///< offset=0xC4  .text:0014537B                 mov     ecx, [eax+0C4h]
+  datum_index_t unk_200;   ///< offset=0xC8  .text:000320C3                 mov     eax, [edi+0C8h]
+  datum_index_t parent_object_index;   ///< offset=0xCC  .text:00145348                 mov     ecx, [eax+0CCh]
   float unk_208[5];         ///< offset=0xD0  .text:0013E640                 fld     dword ptr [ebx+edx*4+0D0h] Colors related, 5 4-byte elements
   float unk_228[NUMBER_OF_OUTGOING_OBJECT_FUNCTIONS]; ///< offset=0xE4  .text:001403FF                 mov     edx, [esi+ecx*4+0E4h] function stuff
   char unk_244[8];          ///< offset=0xF4
@@ -210,10 +249,10 @@ typedef struct {
 /// size=0x424
 typedef struct {
   object_data_t object;               ///< offset=0x000
-  datum_handle_t actor_index;         ///< offset=0x1A4 .text:0003EB73                 cmp     dword ptr [edi+1A4h], 0FFFFFFFFh
-  datum_handle_t swarm_actor_index;   ///< offset=0x1A8 .text:0003EB9C                 cmp     dword ptr [edi+1A8h], 0FFFFFFFFh
-  datum_handle_t unk_428;             ///< offset=0x1AC .text:00031492                 mov     eax, [eax+1ACh]
-  datum_handle_t unk_432;             ///< offset=0x1B0 .text:0003AF89                 mov     eax, [esi+1B0h]   datum index?
+  datum_index_t actor_index;         ///< offset=0x1A4 .text:0003EB73                 cmp     dword ptr [edi+1A4h], 0FFFFFFFFh
+  datum_index_t swarm_actor_index;   ///< offset=0x1A8 .text:0003EB9C                 cmp     dword ptr [edi+1A8h], 0FFFFFFFFh
+  datum_index_t unk_428;             ///< offset=0x1AC .text:00031492                 mov     eax, [eax+1ACh]
+  datum_index_t unk_432;             ///< offset=0x1B0 .text:0003AF89                 mov     eax, [esi+1B0h]   datum index?
   uint32_t unk_436;                   ///< offset=0x1B4 .text:001A80D0                 test    dword ptr [esi+1B4h], 400000h   flags
   uint32_t unk_440;                   ///< offset=0x1B8 .text:000D93E7                 mov     ecx, [eax+1B8h] flags
   uint16_t unk_444;                   ///< offset=0x1BC .text:001B3701                 inc     word ptr [ebx+1BCh]
@@ -221,7 +260,7 @@ typedef struct {
   uint8_t unk_447;                    ///< offset=0x1BF .text:001AE773                 mov     [esi+1BFh], al    seat index
   uint32_t unk_448;                   ///< offset=0x1C0 .text:001A81DA                 mov     [esi+1C0h], ecx
   uint32_t persistent_control_flags;  ///< offset=0x1C4 .text:001A81D3                 mov     [esi+1C4h], edi
-  datum_handle_t unk_456;             ///< offset=0x1C8 .text:00030656                 cmp     dword ptr [ebx+1C8h], 0FFFFFFFFh
+  datum_index_t unk_456;             ///< offset=0x1C8 .text:00030656                 cmp     dword ptr [ebx+1C8h], 0FFFFFFFFh
   uint16_t unk_460;                   ///< offset=0x1CC .text:0004091B                 cmp     bx, [esi+1CCh]
   uint16_t unk_462;                   ///< offset=0x1CE .text:001A9B5E                 mov     [esi+1CEh], ax
   uint32_t unk_464;                   ///< offset=0x1D0 .text:00040924                 mov     ecx, [esi+1D0h] game time related
@@ -244,7 +283,7 @@ typedef struct {
   uint8_t unk_575;                    ///< offset=0x23F padding?
   uint16_t unk_576;                   ///< offset=0x240 .text:001AB2FE                 movsx   edx, word ptr [esi+240h]
   uint16_t unk_578;                   ///< offset=0x242
-  datum_handle_t unk_580;             ///< offset=0x244 .text:001AB147                 mov     edi, [esi+244h]
+  datum_index_t unk_580;             ///< offset=0x244 .text:001AB147                 mov     edi, [esi+244h]
   uint8_t unk_584;                    ///< offset=0x248 .text:001ACF38                 or      byte ptr [eax+248h], 2
   uint8_t unk_585;                    ///< offset=0x249
   uint16_t unk_586;                   ///< offset=0x24A .text:001A8C5D                 cmp     word ptr [esi+24Ah], 0FFFFh
@@ -286,9 +325,9 @@ typedef struct {
   uint16_t unk_674;                   ///< offset=0x2A2 .text:000B0B06                 mov     ax, [ebx+2A2h]   current weapon index into (0x2A8)
   uint16_t unk_676;                   ///< offset=0x2A4 .text:000B707C                 mov     ax, [ebx+2A4h]   next weapon index
   uint16_t unk_678;                   ///< offset=0x2A6
-  datum_handle_t unk_680[MAXIMUM_WEAPONS_PER_UNIT]; ///< offset=0x2A8 .text:001AAD23                 mov     eax, [edi+ecx*4+2A8h]
-  datum_handle_t unk_696[MAXIMUM_WEAPONS_PER_UNIT]; ///< offset=0x2B8 .text:001B1E5D                 mov     dword ptr [edi+eax*4+2B8h], 0
-  datum_handle_t unk_712;             ///< offset=0x2C8 .text:001AA97E                 mov     eax, [eax+2C8h] current equipment
+  datum_index_t unk_680[MAXIMUM_WEAPONS_PER_UNIT]; ///< offset=0x2A8 .text:001AAD23                 mov     eax, [edi+ecx*4+2A8h]
+  datum_index_t unk_696[MAXIMUM_WEAPONS_PER_UNIT]; ///< offset=0x2B8 .text:001B1E5D                 mov     dword ptr [edi+eax*4+2B8h], 0
+  datum_index_t unk_712;             ///< offset=0x2C8 .text:001AA97E                 mov     eax, [eax+2C8h] current equipment
   uint8_t current_grenade_index;      ///< offset=0x2CC .text:001AAEF1                 mov     al, [esi+2CCh] unit->unit.current_grenade_index
   uint8_t unk_717;                    ///< offset=0x2CD .text:000B7087                 movsx   cx, byte ptr [ebx+2CDh]
   uint8_t unk_718[NUMBER_OF_UNIT_GRENADE_TYPES];  ///< offset=0x2CE .text:001A99E3                 cmp     byte ptr [ecx+ebx+2CEh], 0   grenade counts
@@ -296,8 +335,8 @@ typedef struct {
   uint8_t unk_721;                    ///< offset=0x2D1 .text:000B7093                 movsx   dx, byte ptr [ebx+2D1h]
   uint8_t unk_722;                    ///< offset=0x2D2
   uint8_t unk_723;                    ///< offset=0x2D3 .text:001A8090                 movzx   edx, byte ptr [esi+2D3h]
-  datum_handle_t unk_724;             ///< offset=0x2D4 .text:001AA4DE                 mov     ecx, [eax+2D4h]
-  datum_handle_t unk_728;             ///< offset=0x2D8 .text:000D8D8D                 cmp     [eax+2D8h], edi
+  datum_index_t unk_724;             ///< offset=0x2D4 .text:001AA4DE                 mov     ecx, [eax+2D4h]
+  datum_index_t unk_728;             ///< offset=0x2D8 .text:000D8D8D                 cmp     [eax+2D8h], edi
   uint32_t unk_732;                   ///< offset=0x2DC .text:0003AC65                 mov     ecx, [esi+2DCh]  game time related
   uint32_t unk_736;                   ///< offset=0x2E0 .text:000BC220                 mov     [ebx+2E0h], eax  game time related
   uint16_t unk_740;                   ///< offset=0x2E4 .text:00057E26                 mov     ax, [eax+2E4h]   actor related
@@ -345,10 +384,10 @@ typedef struct {
   uint16_t unk_950;                   ///< offset=0x3B6 .text:001B29E6                 mov     [esi+3B6h], di
   uint32_t unk_952;                   ///< offset=0x3B8 .text:001B29ED                 mov     [esi+3B8h], edi
   uint32_t unk_956;                   ///< offset=0x3BC .text:001B489C                 mov     dword ptr [ebx+3BCh], 0FFFFFFFFh
-  datum_handle_t unk_960;             ///< offset=0x3C0 .text:0001C789                 mov     ecx, [eax+3C0h]
+  datum_index_t unk_960;             ///< offset=0x3C0 .text:0001C789                 mov     ecx, [eax+3C0h]
   float unk_964;                      ///< offset=0x3C4 .text:001AF3F9                 fsub    dword ptr [edi+3C4h]
   float unk_968;                      ///< offset=0x3C8 .text:001AF451                 fsub    dword ptr [edi+3C8h]
-  datum_handle_t unk_972;             ///< offset=0x3CC .text:0002F7DC                 mov     eax, [eax+3CCh]
+  datum_index_t unk_972;             ///< offset=0x3CC .text:0002F7DC                 mov     eax, [eax+3CCh]
   uint16_t feign_death_timer;         ///< offset=0x3D0 .text:001B5025                 mov     [esi+3D0h], ax  unit->unit.feign_death_timer
   uint16_t unk_978;                   ///< offset=0x3D2 .text:000BC3C1                 mov     [eax+3D2h], si   datum index only, not a full handle?
   float unk_980;                      ///< offset=0x3D4 .text:000B7471                 fld     dword ptr [eax+3D4h]
@@ -384,7 +423,7 @@ typedef struct {
   uint32_t unk_1096;        ///< offset=0x448 .text:001A0880                 mov     [eax+448h], ecx
   uint32_t unk_1100;        ///< offset=0x44C .text:001A4A0D                 mov     [esi+44Ch], ebx
   uint32_t unk_1104;        ///< offset=0x450 .text:001A0848                 mov     dword ptr [esi+450h], 0FFFFFFFFh
-  datum_handle_t unk_1108;  ///< offset=0x454 .text:001A0AB9                 cmp     [esi+454h], edi 
+  datum_index_t unk_1108;  ///< offset=0x454 .text:001A0AB9                 cmp     [esi+454h], edi 
   uint8_t unk_1112;         ///< offset=0x458 .text:001A0B1D                 mov     byte ptr [esi+458h], 0F1h
   uint8_t unk_1113;         ///< offset=0x459 .text:001A1EE2                 cmp     byte ptr [esi+459h], 1Eh
   uint8_t unk_1114;         ///< offset=0x45A .text:001A2B28                 mov     al, [esi+45Ah]
@@ -529,8 +568,8 @@ typedef struct {
   uint32_t unk_476;       ///< offset=0x1DC .text:000F7CBE                 mov     ecx, [eax+1DCh]
   uint16_t unk_480;       ///< offset=0x1E0 .text:000F7E4B                 cmp     si, [eax+1E0h]   type of some sort, also see projectile_collision
   uint16_t unk_482;       ///< offset=0x1E2 .text:000F8D84                 mov     [esi+1E2h], bx
-  datum_handle_t unk_484; ///< offset=0x1E4 .text:000F8D90                 mov     [esi+1E4h], eax
-  datum_handle_t unk_488; ///< offset=0x1E8 .text:000F7D44                 mov     [eax+1E8h], ecx
+  datum_index_t unk_484; ///< offset=0x1E4 .text:000F8D90                 mov     [esi+1E4h], eax
+  datum_index_t unk_488; ///< offset=0x1E8 .text:000F7D44                 mov     [eax+1E8h], ecx
   uint32_t unk_492;       ///< offset=0x1EC .text:000F9CAC                 mov     eax, [ebx+1ECh]  index into [ebx+eax*4+0FCh]
   float unk_496;          ///< offset=0x1F0 .text:000F8A91                 fmul    dword ptr [edi+1F0h]
   float unk_500;          ///< offset=0x1F4 .text:000F8DEC                 fstp    dword ptr [esi+1F4h]
@@ -587,7 +626,7 @@ typedef struct {
 typedef struct {
   device_data_t device;   ///< offset=0x000
   uint32_t flags;         ///< offset=0x1C4   .text:0009571F                 or      [esi+1C4h], eax
-  datum_handle_t unk_456; ///< offset=0x1C8   .text:000D06C1                 cmp     word ptr [esi+1C8h], 0FFFFh    datum_handle?
+  datum_index_t unk_456; ///< offset=0x1C8   .text:000D06C1                 cmp     word ptr [esi+1C8h], 0FFFFh    datum_handle?
 } control_data_t;
 
 // OBJE -> DEVI -> LIFI
