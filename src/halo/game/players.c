@@ -157,42 +157,42 @@ datum_index_t local_player_get_next(datum_index_t local_player)
   return next_player;
 }
 
-datum_index_t player_index_from_unit_index(datum_index_t unit_index)
-{
-  player_data_t* player;
-  data_iter_t iter;
+// datum_index_t player_index_from_unit_index(datum_index_t unit_index)
+// {
+//   player_data_t* player;
+//   data_iter_t iter;
   
-  datum_index_t player_index = INVALID_DATUM_HANDLE;
+//   datum_index_t player_index = INVALID_DATUM_HANDLE;
 
-  data_iterator_new(&iter, player_data);
-  for (player_data_t* player = data_iterator_next(&iter); player; player = data_iterator_next(&iter)) {
-    if (player->slave_unit_index.handle == unit_index.handle)
-      player_index = iter.datum_index;
-  }
+//   data_iterator_new(&iter, player_data);
+//   for (player_data_t* player = data_iterator_next(&iter); player; player = data_iterator_next(&iter)) {
+//     if (player->slave_unit_index.handle == unit_index.handle)
+//       player_index = iter.datum_index;
+//   }
 
-  return player_index;
-}
+//   return player_index;
+// }
 
-void player_died(datum_index_t player_index)
-{
-  player_data_t* player = datum_get(player_data, player_index);
-  player->last_slave_unit_index = player->slave_unit_index;
-  player->slave_unit_index = INVALID_DATUM_HANDLE;
+// void player_died(datum_index_t player_index)
+// {
+//   player_data_t* player = datum_get(player_data, player_index);
+//   player->last_slave_unit_index = player->slave_unit_index;
+//   player->slave_unit_index = INVALID_DATUM_HANDLE;
 
-  uint16_t local_player_index = player->local_player_index;
-  if (local_player_index != -1) {
-    player_control_new_unit(local_player_index, INVALID_DATUM_HANDLE);
-  }
+//   uint16_t local_player_index = player->local_player_index;
+//   if (local_player_index != -1) {
+//     player_control_new_unit(local_player_index, INVALID_DATUM_HANDLE);
+//   }
 
-  players_globals->are_all_dead = true;
+//   players_globals->are_all_dead = true;
 
-  data_iter_t iter;
-  data_iterator_new(&iter, player_data);
-  for (player_data_t* player = data_iterator_next(&iter); player; player = data_iterator_next(&iter)) {
-    if (player->slave_unit_index.handle != -1)
-      players_globals->are_all_dead = false;
-  }
-}
+//   data_iter_t iter;
+//   data_iterator_new(&iter, player_data);
+//   for (player_data_t* player = data_iterator_next(&iter); player; player = data_iterator_next(&iter)) {
+//     if (player->slave_unit_index.handle != -1)
+//       players_globals->are_all_dead = false;
+//   }
+// }
 
 bool players_are_all_dead(void)
 {

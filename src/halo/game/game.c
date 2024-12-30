@@ -540,17 +540,20 @@ void game_initialize_for_new_map(void)
   ui_widgets_safe_to_load(1);
 }
 
-void game_set_game_variant_from_name(const char* name)
-{
-  game_variant_t variant;
-  game_variant_t variant_copy;
+void game_set_game_variant_from_name(const char* name) {
+    game_variant_t variant;
+    game_variant_t variant_copy;
 
-  qmemcpy(&variant_copy, game_engine_get_variant_by_name(&variant, name), sizeof(game_variant_t));
-  if (!&variant_copy)
-  {
-    csmemset(&game_variant_global, (char)&variant_copy, sizeof(game_variant_t));
-    return;
-  }
+    // Attempt to retrieve the game variant by name
+    if (!game_engine_get_variant_by_name(&variant, name)) {
+        // If not found, reset the global variant to zero
+        csmemset(&game_variant_global, 0, sizeof(game_variant_t));
+        return;
+    }
 
-  qmemcpy(&game_variant_global, (const void*)&variant_copy, sizeof(game_variant_t));
+    // Copy the retrieved variant into a temporary copy
+    qmemcpy(&variant_copy, &variant, sizeof(game_variant_t));
+
+    // Copy the variant copy to the global variant
+    qmemcpy(&game_variant_global, &variant_copy, sizeof(game_variant_t));
 }
