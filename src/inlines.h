@@ -77,6 +77,10 @@ INLINE size_t strlen(const char *s)
   return c;
 }
 
+INLINE int custom_isnan(float value) {
+    return value != value;
+}
+
 #undef INCLUDE_DEFS
 #endif // INCLUDE_DEFS
 

@@ -60,15 +60,76 @@ typedef union {
   };
 } datum_index_t;
 
-//from sound manager related stuff
-typedef unsigned long long uint64_t;
-uint64_t undefined8;
+//bink
+
+
+/* typedef struct {
+    uint32_t memory_pool_base;       // DAT_004eae24 Base address of the memory pool
+    uint32_t memory_pool_size;       // DAT_004eae2c Total size of the memory pool
+    uint32_t memory_pool_offset;     // Current offset into the memory pool
+    uint32_t memory_allocation_size; // Offset for the current allocation (DAT_004eae28)
+    uint32_t pointer_block_count;    // Number of active pointer blocks (DAT_004eae30)
+    uint32_t *pointer_blocks;        // Array of allocated memory block pointers (DAT_004eacd0)
+    uint8_t playback_initialized;    // Flag indicating playback initialization (formerly DAT_004ead58)
+} bink_globals_t; */
+
+/* typedef struct {
+    uint32_t memory_pool_base;       // 4 bytes
+    uint32_t memory_pool_size;       // 4 bytes
+    uint32_t memory_pool_offset;     // 4 bytes
+    uint32_t memory_allocation_size; // 4 bytes
+    uint32_t pointer_block_count;    // 4 bytes
+    uint32_t *pointer_blocks;        // 4 bytes
+    uint8_t playback_initialized;    // 1 byte
+    uint8_t padding[3];              // Align to 4 bytes
+    uint8_t reserved[184];           // Additional space to match 0xD8 total size
+} bink_globals_t; */
 
 typedef struct {
-    float value;           // Primary value
-    float current_value;   // Current value
-    short instance_count;  // Number of instances
-} sound_class_t;
+    uint32_t memory_pool_base;       // Base address of the memory pool 0x4eae24
+    uint32_t memory_pool_offset;     // Current offset into the memory pool  0x4eae28
+    uint32_t memory_pool_size;       // Total size of the memory pool 0x4eae2c
+    uint32_t pointer_block_count;    // Number of active pointer blocks 0x4eae30
+} bink_globals_t;
+
+typedef struct {
+    uint8_t playback_initialized; // Offset 0x00: Flag indicating if playback is initialized
+    uint8_t reserved[215];        // Reserved or unknown fields to match size (0xD8 total size)
+} bink_playback_globals_t;
+
+
+
+
+//from sound manager related stuff
+typedef unsigned long long uint64_t;
+
+// typedef struct {
+//     float value;           // Primary value
+//     float current_value;   // Current value
+//     short instance_count;  // Number of instances
+// } sound_class_t;
+
+typedef struct {
+    float value;      // Offset 0x00: First float field (e.g., volume level)
+    float current_value;      // Offset 0x04: Second float field (e.g., balance or pitch level)
+    uint16_t instance_count;   // Offset 0x08: A 16-bit field (e.g., status or flags)
+    uint16_t padding;   // Offset 0x0A: Padding for alignment
+} sound_class_t;        // Total size: 12 bytes (0xC)
+
+typedef struct {
+    int16_t maximum_number_per_definition;   // Offset 0x00: Max number of instances per definition
+    int16_t maximum_number_per_object;      // Offset 0x02: Max number of instances per object
+    uint16_t instance_count;                // Offset 0x04: Number of active instances
+    uint16_t padding1;                      // Offset 0x06: Padding for alignment
+    float value;                            // Offset 0x08: First float field (e.g., volume level)
+    float current_value;                    // Offset 0x0C: Second float field (e.g., balance)
+    uint16_t additional_field1;            // Offset 0x10: Placeholder for unknown data
+    uint16_t padding2;                      // Offset 0x12: Padding for alignment
+    char reserved[20];                      // Offset 0x14 to 0x28: Reserved or additional fields
+    bool flag;                              // Offset 0x28: Boolean field
+    char padding3[3];                       // Offset 0x29 to 0x2C: Padding to align struct size
+} extended_sound_class_t;                   // Total size: 0x2C (44 bytes)
+
 
 
 // Define a struct for the section
