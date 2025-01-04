@@ -27,6 +27,22 @@
         {
           "decl": "data_t * object_header_data;",
           "addr": "0x5abc10"
+        },
+        {
+          "decl": "char * strstr(const char * haystack, const char * needle);",
+          "addr": "001d9690"
+        },
+        {
+          "decl": "float generate_random_float(uint32_t *seed);",
+          "addr": "0010b240"
+        },
+        {
+          "decl": "void KeQuerySystemTime(uint64_t *system_time);",
+          "addr": "00253138"
+        },
+        {
+          "decl": "void query_memory_statistics(uint32_t *statistics_buffer);",
+          "addr": "001d0da1"
         }
       ]
     },
@@ -36,6 +52,15 @@
         {
           "decl": "void __cdecl qsort(void *base, size_t nmemb, size_t size, int (__cdecl *compar)(const void *, const void *));",
           "addr": "0x1d9260"
+        }
+      ]
+    },
+    {
+      "name": "MSVC",
+      "functions": [
+        {
+          "decl": "unsigned __int64 __aulldiv(unsigned __int64 dividend, unsigned __int64 divisor);",
+          "addr": "001dd770"
         }
       ]
     },
@@ -76,6 +101,28 @@
     {
       "name": "bink_playback.obj",
       "source": "bink/bink_playback.c",
+      "data": [
+        {
+          "decl": "uint32_t *bink_pointer_blocks;",
+          "addr": "004eacd0"
+        },
+        {
+          "decl": "bink_globals_t bink_globals;",
+          "addr": "0x4eae24"
+        },
+        {
+          "decl": "bink_playback_globals_t bink_playback_globals;",
+          "addr": "004ead58"
+        },
+        {
+          "decl": "int (*bink_memory_allocate)(int);",
+          "addr": "0063d5f0"
+        },
+        {
+          "decl": "void (*bink_memory_free)(int);",
+          "addr": "0063d5f4"
+        }
+      ],
       "functions": [
         {
           "decl": "void bink_playback_initialize(void);",
@@ -92,6 +139,50 @@
         {
           "decl": "void bink_playback_update(void);",
           "addr": "0x1c6870"
+        },
+        {
+          "decl": "void bink_playback_file(const char *filename, uint32_t playback_flags);",
+          "addr": "001c6440"
+        },
+        {
+          "decl": "void bink_playback_cleanup(void);",
+          "addr": "001c61d0"
+        },
+        {
+          "decl": "uint bink_allocate_aligned_memory(uint alignment, uint size_in_bytes);",
+          "addr": "001c5990"
+        },
+        {
+          "decl": "int bink_allocate_memory_block(int size_in_bytes);",
+          "addr": "001c5ab0"
+        },
+        {
+          "decl": "void bink_free_memory_block(int block_address);",
+          "addr": "001c5ca0"
+        },
+        {
+          "decl": "bool are_all_pointer_blocks_cleared(void);",
+          "addr": "001c5a80"
+        },
+        {
+          "decl": "void bink_playback_cleanup(void);",
+          "addr": "001c62a0"
+        },
+        {
+          "decl": "void register_bink_memory_functions(int (*allocate_function)(int), void (*free_function)(int));",
+          "addr": "00231490"
+        },
+        {
+          "decl": "void process_bink_frame_statistics(void);",
+          "addr": "001c5d70"
+        },
+        {
+          "decl": "void process_bink_texture_data(void);",
+          "addr": "001c6230"
+        },
+        {
+          "decl": "void process_bink_playback_state(void);",
+          "addr": "001c6340"
         }
       ]
     },
@@ -796,6 +887,236 @@
         {
           "decl": "void game_sound_update(float);",
           "addr": "0x1c8140"
+        },
+        {
+          "decl":"uint32_t initialize_game_sound(    uint32_t sound_id,    uint32_t playback_flags,    uint16_t sound_attributes,    uint32_t *position,    uint32_t *forward_vector,    float scale);" ,
+          "addr":"001c7e70"
+        },
+        {
+          "decl":"void update_looping_sound_references(void);" ,
+          "addr":"001c70b0"
+        },
+        {
+          "decl":"int add_looping_sound_instance(    int object_id,     int sound_id,     int marker_name,     uint16_t playback_properties);" ,
+          "addr":"001c7230"
+        },
+        {
+          "decl":"void remove_looping_sound_instance(int looping_sound_index);" ,
+          "addr":"001c7330"
+        },
+        {
+          "decl":"void play_sound_at_location(    uint32_t sound_id,     uint32_t *location,     float scale);" ,
+          "addr":"001c73d0"
+        },
+        {
+          "decl":"void play_global_sound(uint32_t sound_id, float scale);" ,
+          "addr":"001c7480"
+        },
+        {
+          "decl":"void update_looping_sound_instance(int looping_sound_index, uint32_t *location);" ,
+          "addr":"001c77a0"
+        },
+        {
+          "decl":"uint32_t attach_sound_source(uint32_t sound_id, int attachment_data, int sound_source);" ,
+          "addr":"001c7a10"
+        },
+        {
+          "decl":"uint32_t validate_sound_location(void);" ,
+          "addr":"001c7c30"
+        },
+        {
+          "decl":"void calculate_spatialized_sound_properties( uint32_t observer_id, short *sound_source, float attenuation_factor);" ,
+          "addr":"001c8310"
+        },
+        {
+          "decl":"void initialize_looping_sound(int sound_definition_id, uint32_t playback_settings, uint32_t sound_attributes);" ,
+          "addr":"001c8510"
+        }
+      ]
+    },
+    {
+      "name": "sound_classes.obj",
+      "source": "sound/sound_classes.c",
+      "functions": [
+        {
+          "decl": "void sound_classes_initialize(void);",
+          "addr": "0x1c8990"
+        },
+        {
+          "decl": "void sound_classes_dispose_from_old_map(void);",
+          "addr": "0x1c89b0"
+        },
+        {
+          "decl": "void sound_classes_dispose(void);",
+          "addr": "0x1c89c0"
+        },
+        {
+          "decl": "void sound_classes_initialize_for_new_map(void);",
+          "addr": "0x1c8b70"
+        },
+        {
+          "decl": "sound_class_t *get_sound_class(int index);",
+          "addr": "001c89d0"
+        },
+        {
+          "decl": "void update_sound_classes(int time_delta);",
+          "addr": "001c8c00"
+        },
+        {
+          "decl": "float get_sound_class_current_value(int index);",
+          "addr": "001c8c60"
+        },
+        {
+          "decl": "void update_sound_classes_by_name(const char *name, float value, short duration);",
+          "addr": "001c8c80"
+        },
+        {
+          "decl": "void update_extended_sound_class_flags(const char *name, char flag);",
+          "addr": "001c8a40"
+        },
+        {
+          "decl": "extended_sound_class_t *get_extended_sound_class(int class_index);",
+          "addr": "001c88c0"
+        }
+      ]
+    },
+    {
+      "name": "sound_manager.obj",
+      "source": "sound/sound_manager.c",
+      "functions": [
+        {
+          "decl": "void sound_initialize_for_new_map(void);",
+          "addr": "0x1cb810"
+        },
+        {
+          "decl": "void sound_dispose_from_old_map(void);",
+          "addr": "0x1cf640"
+        },
+        {
+          "decl": "void sound_render(void);",
+          "addr": "0x1cf730"
+        },
+        {
+          "decl": "void process_sound_manager_tasks(void);",
+          "addr": "001cf360"
+        },
+        {
+          "decl": "void update_active_sound_channels(void);",
+          "addr": "001ceda0"
+        },
+        {
+          "decl": "short assign_sound_to_channel(int sound_index);",
+          "addr": "001cebb0"
+        },
+        {
+          "decl": "bool process_sound_loop(int sound_definition_index, int sound_instance_index, short *source_data, short loop_type,char playback_state,float volume);",
+          "addr": "001ce550"
+        },
+        {
+          "decl": "void update_local_player_audio_contexts(void);",
+          "addr": "001ce9c0"
+        },
+        {
+          "decl": "int initialize_sound_playback(uint32_t sound_definition, short *source_properties, uint32_t playback_flags, int additional_data, void *track_data, short track_data_size);",
+          "addr": "001ce180"
+        },
+        {
+          "decl": "void process_sound_channel_update(uint32_t channel_index, float additional_gain);",
+          "addr": "001cdc30"
+        },
+        {
+          "decl": "short find_available_sound_channel(uint32_t sound_index);",
+          "addr": "001cd8b0"
+        },
+        {
+          "decl": "uint32_t get_closest_listener_or_player(float sound_distance);",
+          "addr": "001cd5a0"
+        },
+        {
+          "decl": "void sound_get_and_handle_impulse(uint32_t sound_index);",
+          "addr": "001cd450"
+        },
+        {
+          "decl": "void sound_channel_playback_update(int channel_index, float adjustment_factor);",
+          "addr": "001ccf80"
+        },
+        {
+          "decl": "bool sound_compare_priority(int challenger_sound_index, float priority_value);",
+          "addr": "001cce80"
+        },
+        {
+          "decl": "short find_available_channel_by_priority(int channel_indices, short channel_count);",
+          "addr": "001ccd70"
+        },
+        {
+          "decl": "float calculate_distance_to_listener(float param);",
+          "addr": "001ccca0"
+        },
+        {
+          "decl": "float calculate_squared_distance_to_listener(float param);",
+          "addr": "001ccbe0"
+        },
+        {
+          "decl": "void release_sound_channel(int sound_index);",
+          "addr": "001cca60"
+        },
+        {
+          "decl": "void apply_sound_fade(uint32_t mode, float duration, int fade_in_sound_index, int fade_out_sound_index);",
+          "addr": "001cc8f0"
+        },
+        {
+          "decl": "void initialize_sound_manager(void);",
+          "addr": "001cc710"
+        },
+        {
+          "decl": "float calculate_sound_fade_progress(void);",
+          "addr": "001cc310"
+        },
+        {
+          "decl": "void clear_sound_channel_resources(short channel_index);",
+          "addr": "001cc140"
+        },
+        {
+          "decl": "short update_channel_permutation(short channel_index);",
+          "addr": "001cc050"
+        },
+        {
+          "decl": "void apply_channel_properties(int properties);",
+          "addr": "001cbfb0"
+        },
+        {
+          "decl": "void reset_channel_state(short channel_index, int default_value);",
+          "addr": "001cbf30"
+        },
+        {
+          "decl": "void summarize_sound_instances(int sound_index, short *summary);",
+          "addr": "001cbd30"
+        },
+        {
+          "decl": "bool validate_sound_channel(void);",
+          "addr": "001cbc40"
+        },
+        {
+          "decl": "uint8_t *get_local_player_sound_state(short player_index);",
+          "addr": "001cbac0"
+        },
+        {
+          "decl": "uint32_t *get_sound_channel_data(short channel_index);",
+          "addr": "001cba80"
+        }
+      ]
+    },
+    {
+      "name": "sound_definitions.obj",
+      "source": "sound/sound_definitions.c",
+      "functions": [
+        {
+          "decl": "short resolve_sound_permutation(byte *sound_data, short range_index, short secondary_range_index);",
+          "addr": "001c8f80"
+        },
+        {
+          "decl":"int get_mouth_data_tick_offset(int permutation, short tick_index);",
+          "addr":"001c8d90"
         }
       ]
     },
@@ -828,7 +1149,7 @@
           "addr": "0x1bf990"
         },
         {
-          "decl": "void *game_state_malloc(const char *name, const char *a2, int size);",
+          "decl": "int *game_state_malloc(const char *name, const char *category, uint32_t size);",
           "addr": "0x1bfbf0"
         },
         {
@@ -857,7 +1178,7 @@
         {
           "decl": "bool game_time_initialized(void);",
           "addr": "0xb5990"
-        },    
+        },
         {
           "decl": "void game_time_initialize(void);",
           "addr": "0xb59b0"
@@ -1121,7 +1442,7 @@
         {
           "decl": "bool debug_game_save;",
           "addr": "0x46e002"
-        },        
+        },
         {
           "decl": "__int16 global_screenshot_count;",
           "addr": "0x46e008"
@@ -1814,12 +2135,24 @@
           "addr": "0x10b0a0"
         },
         {
-          "decl": "int *get_global_random_seed_address(void);",
+          "decl": "uint32_t *get_global_random_seed_address(void);",
           "addr": "0x10b0d0"
         },
         {
           "decl": "void random_seed_debug_log(bool a1);",
           "addr": "0x10b130"
+        },
+        {
+          "decl": "void initialize_random_direction_geosphere(void);",
+          "addr": "0010b160"
+        },
+        {
+          "decl": "uint32_t update_system_time_without_output(void);",
+          "addr": "0008e380"
+        },
+        {
+          "decl": "void calculate_adjusted_system_time(uint32_t *output_time);",
+          "addr": "001d9d28"
         }
       ]
     },
@@ -2068,46 +2401,6 @@
       ]
     },
     {
-      "name": "sound_classes.obj",
-      "source": "sound/sound_classes.c",
-      "functions": [
-        {
-          "decl": "void sound_classes_initialize(void);",
-          "addr": "0x1c8990"
-        },
-        {
-          "decl": "void sound_classes_dispose_from_old_map(void);",
-          "addr": "0x1c89b0"
-        },
-        {
-          "decl": "void sound_classes_dispose(void);",
-          "addr": "0x1c89c0"
-        },
-        {
-          "decl": "void sound_classes_initialize_for_new_map(void);",
-          "addr": "0x1c8b70"
-        }
-      ]
-    },
-    {
-      "name": "sound_manager.obj",
-      "source": "sound/sound_manager.c",
-      "functions": [
-        {
-          "decl": "void sound_initialize_for_new_map(void);",
-          "addr": "0x1cb810"
-        },
-        {
-          "decl": "void sound_dispose_from_old_map(void);",
-          "addr": "0x1cf640"
-        },
-        {
-          "decl": "void sound_render(void);",
-          "addr": "0x1cf730"
-        }
-      ]
-    },
-    {
       "name": "stack_walk_windows.obj",
       "source": "cseries/stack_walk_windows.c",
       "functions": [
@@ -2324,6 +2617,14 @@
       "name": null,
       "data": [
         {
+          "decl": "uint32_t global_random_seed;",
+          "addr": "0046e3f4"
+        },
+        {
+          "decl": "int global_random_seed_lock_counter;",
+          "addr": "0046e3f0"
+        },
+        {
           "decl": "void (*ui_widget_game_data_function_table[])(void *widget);",
           "addr": "0x31e500"
         },
@@ -2350,6 +2651,18 @@
         {
           "decl": "game_time_globals_t * game_time_globals;",
           "addr": "0x45708c"
+        },
+        {
+          "decl": "sound_class_t * sound_classes_globals;",
+          "addr": "0050548c"
+        },
+        {
+          "decl": "extended_sound_class_t extended_sound_classes[NUMBER_OF_SOUND_CLASSES];",
+          "addr": "0032ed08"
+        },
+        {
+          "decl": "const char *sound_class_names[NUMBER_OF_SOUND_CLASSES];",
+          "addr": "0032f5d0"
         },
         {
           "decl": "player_control_globals_t * player_control_globals;",
